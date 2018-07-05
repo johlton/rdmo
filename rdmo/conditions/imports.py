@@ -13,7 +13,7 @@ from .validators import ConditionUniqueKeyValidator
 log = logging.getLogger(__name__)
 
 
-def import_conditions(conditions_node, conditions_savelist={}, do_save=False):
+def import_conditions(conditions_node, conditions_savelist, do_save=False):
     log.info('Importing conditions')
     nsmap = get_ns_map(conditions_node.getroot())
 

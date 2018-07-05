@@ -8,8 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView, ListView
 from django.urls import reverse_lazy
 
-import rdmo.core.cipher as Cipher
-from rdmo.core.imports import handle_uploaded_file, validate_xml, make_filename_token, is_filename_good
+from rdmo.core.imports import handle_uploaded_file, validate_xml
 from rdmo.core.utils import get_model_field_meta, render_to_format
 from rdmo.core.views import ModelPermissionMixin
 
@@ -51,7 +50,6 @@ class ConditionsExportView(ModelPermissionMixin, ListView):
 
 
 class ConditionsImportXMLView(ModelPermissionMixin, ListView):
-    cipher = Cipher.Cipher()
     permission_required = ('conditions.add_condition', 'conditions.change_condition', 'conditions.delete_condition')
     success_url = reverse_lazy('conditions')
     parsing_error_template = 'core/import_parsing_error.html'
@@ -66,13 +64,11 @@ class ConditionsImportXMLView(ModelPermissionMixin, ListView):
         # in case of receiving xml data
         try:
             conditions_savelist = json.loads(request.POST['tabledata'])
-            tempfilename = self.cipher.decrypt(request.POST['filename'])
         except KeyError:
             pass
         else:
             log.info('Post seems to come from confirmation page')
-            if is_filename_good(tempfilename, request.POST['fn_token']) is True:
-                return self.trigger_import(request, tempfilename, conditions_savelist, do_save=True)
+            return self.trigger_import(request, conditions_savelist, do_save=True)
 
         # when receiving upload file
         try:
@@ -81,26 +77,25 @@ class ConditionsImportXMLView(ModelPermissionMixin, ListView):
             return HttpResponseRedirect(self.success_url)
         else:
             log.info('Post from file import dialog')
-            tempfilename = handle_uploaded_file(request.FILES['uploaded_file'])
-            return self.trigger_import(request, tempfilename, do_save=False)
+            request.session['tempfile'] = handle_uploaded_file(request.FILES['uploaded_file'])
+            return self.trigger_import(request)
 
-    def trigger_import(self, request, tempfilename, tabledata={}, do_save=False):
-        log.info('Parsing file ' + tempfilename)
-        roottag, xmltree = validate_xml(tempfilename)
+    def trigger_import(self, request, tabledata={}, do_save=False):
+        log.info('Parsing file ' + request.session.get('tempfile'))
+        roottag, xmltree = validate_xml(request.session.get('tempfile'))
         if roottag == 'conditions':
+            # NOTE: WE GET UNTIL HERE
             conditions_savelist, do_save = import_conditions(xmltree, conditions_savelist=tabledata, do_save=do_save)
             if do_save is False:
-                return self.render_confirmation_page(request, conditions_savelist, tempfilename)
+                return self.render_confirmation_page(request, conditions_savelist)
             else:
                 return HttpResponseRedirect(self.success_url)
         else:
             log.info('Xml parsing error. Import failed.')
             return render(request, self.parsing_error_template, status=400)
 
-    def render_confirmation_page(self, request, conditions_savelist, tempfilename, *args, **kwargs):
+    def render_confirmation_page(self, request, conditions_savelist, *args, **kwargs):
         return render(request, self.confirm_page_template, {
             'status': 200,
             'conditions_savelist': sorted(conditions_savelist.items()),
-            'filename': self.cipher.encrypt(tempfilename),
-            'fn_token': make_filename_token(tempfilename),
         })

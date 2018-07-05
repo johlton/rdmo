@@ -107,14 +107,25 @@ def is_filename_good(filename, fn_token):
 
 def model_will_be_imported(model1, model2):
     will_be_imported = False
-    for att1, val1 in model1.__dict__.iteritems():
-        try:
-            val2 = getattr(model2, att1)
-        except Exception as e:
-            will_be_imported = True
-        else:
-            if val1 != val2:
-                will_be_imported = True
+    fields1 = model1._meta.get_fields()
+
+    for field in fields1:
+        log.debug(field.name)
+        field2 = getattr(model1, field.name)
+        # except:
+        #     will_be_imported = True
+        log.debug(str(field2))
+        # log.debug(model1._meta.get_field_by_name(field))
+
+    # for att1, val1 in model1.__dict__.iteritems():
+    # for att1, val1 in model1.iteritems():
+        # try:
+        #     val2 = getattr(model2, att1)
+        # except Exception as e:
+        #     will_be_imported = True
+        # else:
+        #     if val1 != val2:
+        #         will_be_imported = True
     return will_be_imported
 
 

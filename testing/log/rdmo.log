@@ -1,0 +1,37 @@
+2018-07-02 11:51:39,650 [INFO] /src/rdmo/rdmo/conditions/imports.py 17: Importing conditions
+2018-07-02 11:51:39,651 [INFO] /src/rdmo/rdmo/core/utils.py 54: Nsmap construction result: {'dc': 'http://purl.org/dc/elements/1.1/'}
+2018-07-02 11:51:39,651 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/options_contains
+2018-07-02 11:51:39,653 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/options_contains"
+2018-07-02 11:51:39,654 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/options_empty
+2018-07-02 11:51:39,656 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/options_empty"
+2018-07-02 11:51:39,657 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/options_equal
+2018-07-02 11:51:39,659 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/options_equal"
+2018-07-02 11:51:39,660 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/options_not_empty
+2018-07-02 11:51:39,661 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/options_not_empty"
+2018-07-02 11:51:39,662 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/options_not_equal
+2018-07-02 11:51:39,664 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/options_not_equal"
+2018-07-02 11:51:39,665 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/text_contains
+2018-07-02 11:51:39,666 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/text_contains"
+2018-07-02 11:51:39,667 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/text_empty
+2018-07-02 11:51:39,669 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/text_empty"
+2018-07-02 11:51:39,670 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/text_equal
+2018-07-02 11:51:39,672 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/text_equal"
+2018-07-02 11:51:39,672 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/text_greater_than
+2018-07-02 11:51:39,674 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/text_greater_than"
+2018-07-02 11:51:39,675 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/text_greater_than_equal
+2018-07-02 11:51:39,677 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/text_greater_than_equal"
+2018-07-02 11:51:39,678 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/text_lesser_than
+2018-07-02 11:51:39,679 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/text_lesser_than"
+2018-07-02 11:51:39,680 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/text_lesser_than_equal
+2018-07-02 11:51:39,682 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/text_lesser_than_equal"
+2018-07-02 11:51:39,683 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/text_not_empty
+2018-07-02 11:51:39,684 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/text_not_empty"
+2018-07-02 11:51:39,685 [INFO] /src/rdmo/rdmo/conditions/imports.py 29: Condition does exist. Loaded from uri http://example.com/terms/conditions/text_not_equal
+2018-07-02 11:51:39,687 [INFO] /src/rdmo/rdmo/conditions/imports.py 63: Condition saving to "http://example.com/terms/conditions/text_not_equal"
+2018-07-02 11:51:39,802 [INFO] /src/rdmo/rdmo/core/utils.py 158: Exporting pdf document using args ['-V', 'geometry:margin=1in', '--latex-engine=xelatex']
+2018-07-02 11:51:41,854 [INFO] /src/rdmo/rdmo/core/utils.py 158: Exporting rtf document using args []
+2018-07-02 11:51:41,947 [INFO] /src/rdmo/rdmo/core/utils.py 158: Exporting odt document using args [u'--reference-odt=/src/rdmo/rdmo/share/reference.odt']
+2018-07-02 11:51:42,045 [INFO] /src/rdmo/rdmo/core/utils.py 158: Exporting docx document using args [u'--reference-docx=/src/rdmo/rdmo/share/reference.docx']
+2018-07-02 11:51:42,184 [INFO] /src/rdmo/rdmo/core/utils.py 158: Exporting markdown document using args []
+2018-07-02 11:51:42,282 [INFO] /src/rdmo/rdmo/core/utils.py 158: Exporting mediawiki document using args []
+2018-07-02 11:51:42,373 [INFO] /src/rdmo/rdmo/core/utils.py 158: Exporting tex document using args []
