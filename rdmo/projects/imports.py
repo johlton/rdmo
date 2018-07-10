@@ -52,7 +52,6 @@ def import_project(project_node, user):
     except AttributeError:
         log.error(str(AttributeError))
         pass
-
     loop_over_values(project_node, nsmap, project)
 
 
@@ -67,23 +66,21 @@ def import_snapshot(snapshot_node, nsmap, project):
 
     snapshot.created = snapshot_node.find('created').text
     snapshot.save()
-
     loop_over_values(snapshot_node, nsmap, project, snapshot)
 
 
 def loop_over_values(parentnode, nsmap, project, snapshot=None):
     try:
-        for childnode in parentnode.iter():
-            import_value(childnode, nsmap, project)
-    except AttributeError:
+        for valuenode in parentnode.find('values').findall('value'):
+            import_value(valuenode, nsmap, project, snapshot)
+    except Exception as e:
         log.error(str(AttributeError))
         pass
 
 
 def import_value(value_node, nsmap, project, snapshot=None):
     log.info('Importing value node: ' + str(value_node))
-    attribute_uri = get_value_from_treenode(value_node, 'title')
-
+    attribute_uri = value_node.find('attribute').get(get_ns_tag('dc:uri', nsmap))
     if attribute_uri is not None:
         try:
             attribute = Attribute.objects.get(uri=attribute_uri)
@@ -112,11 +109,10 @@ def import_value(value_node, nsmap, project, snapshot=None):
         value.text = get_value_from_treenode(value_node, 'text')
 
         try:
-            option_uri = value_node['option'].get(get_ns_tag('dc:uri', nsmap))
+            option_uri = value_node.find('option').get(get_ns_tag('dc:uri', nsmap))
             value.option = Option.objects.get(uri=option_uri)
         except Option.DoesNotExist:
             value.option = None
-
         value.save()
     else:
         log.info('Skipping value without Attribute.')
