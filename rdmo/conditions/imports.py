@@ -71,4 +71,4 @@ def import_conditions(conditions_node, savelist={}, do_save=False):
             if do_save is True and savelist_uri_setting is True:
                 log.info('Condition saving to "' + str(condition_uri) + '"')
                 condition.save()
-    return savelist, do_save
+    return savelist

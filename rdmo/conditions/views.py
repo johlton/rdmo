@@ -84,7 +84,7 @@ class ConditionsImportXMLView(ModelPermissionMixin, ListView):
         log.info('Parsing file ' + request.session.get('tempfile'))
         roottag, xmltree = validate_xml(request.session.get('tempfile'))
         if roottag == 'conditions':
-            savelist, do_save = import_conditions(xmltree, savelist=tabledata, do_save=do_save)
+            savelist = import_conditions(xmltree, savelist=tabledata, do_save=do_save)
             if do_save is False:
                 return self.render_confirmation_page(request, savelist=savelist)
             else:
