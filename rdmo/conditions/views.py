@@ -78,13 +78,13 @@ class ConditionsImportXMLView(ModelPermissionMixin, ListView):
         else:
             log.info('Post from file import dialog')
             request.session['tempfile'] = handle_uploaded_file(request.FILES['uploaded_file'])
-            return self.trigger_import(request)
+            return self.trigger_import(request, savelist={})
 
-    def trigger_import(self, request, tabledata={}, do_save=False):
+    def trigger_import(self, request, savelist={}, do_save=False):
         log.info('Parsing file ' + request.session.get('tempfile'))
         roottag, xmltree = validate_xml(request.session.get('tempfile'))
         if roottag == 'conditions':
-            savelist = import_conditions(xmltree, savelist=tabledata, do_save=do_save)
+            savelist = import_conditions(xmltree, savelist=savelist, do_save=do_save)
             if do_save is False:
                 return self.render_confirmation_page(request, savelist=savelist)
             else:

@@ -99,7 +99,7 @@ class DomainImportXMLView(ObjectPermissionMixin, TemplateView):
         else:
             log.info('Post from file import dialog')
             request.session['tempfile'] = handle_uploaded_file(request.FILES['uploaded_file'])
-            return self.trigger_import(request)
+            return self.trigger_import(request, savelist={})
 
     def trigger_import(self, request, savelist={}, do_save=False):
         log.info('Parsing file ' + request.session.get('tempfile'))
