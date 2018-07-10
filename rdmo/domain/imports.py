@@ -73,11 +73,9 @@ def import_attribute_entity(entity_node, nsmap, parent=None, savelist={}, do_sav
                 pass
 
     for child_node in entity_node.find('children').findall('entity'):
-        log.debug("CHILDREN FOUND")
-        savelist = import_attribute_entity(child_node, nsmap, parent=entity, savelist=savelist)
+        savelist = import_attribute_entity(child_node, nsmap, parent=entity, savelist=savelist, do_save=do_save)
     for child_node in entity_node.find('children').findall('attribute'):
-        log.debug("ATTRIBUTES FOUND")
-        savelist = import_attribute(child_node, nsmap, parent=entity, savelist=savelist)
+        savelist = import_attribute(child_node, nsmap, parent=entity, savelist=savelist, do_save=do_save)
     return savelist
 
 
