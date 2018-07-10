@@ -1,3 +1,4 @@
+import json
 import logging
 
 from django.conf import settings
@@ -8,10 +9,10 @@ from django.views.generic import TemplateView, ListView
 from django.urls import reverse_lazy
 
 from rdmo.core.imports import handle_uploaded_file, validate_xml
-from rdmo.domain.imports import import_domain
 from rdmo.core.views import ModelPermissionMixin, ObjectPermissionMixin
 from rdmo.core.utils import get_model_field_meta, render_to_format, render_to_csv
 
+from .imports import import_domain
 from .models import AttributeEntity, Attribute, Range, VerboseName
 from .serializers.export import AttributeEntitySerializer as ExportSerializer
 from .renderers import XMLRenderer
@@ -73,23 +74,48 @@ class DomainImportXMLView(ObjectPermissionMixin, TemplateView):
     permission_required = ('domain.add_attributeentity', 'domain.change_attributeentity', 'domain.delete_attributeentity')
     success_url = reverse_lazy('domain')
     parsing_error_template = 'core/import_parsing_error.html'
+    confirm_page_template = 'domain/domain_confirmation_page.html'
 
     def get(self, request, *args, **kwargs):
         return HttpResponseRedirect(self.success_url)
 
     def post(self, request, *args, **kwargs):
-        # context = self.get_context_data(**kwargs)
+        log.info('Validating post request')
+
+        # in case of receiving xml data
+        try:
+            savelist = json.loads(request.POST['tabledata'])
+        except KeyError:
+            pass
+        else:
+            log.info('Post seems to come from confirmation page')
+            return self.trigger_import(request, savelist, do_save=True)
+
+        # when receiving upload file
         try:
             request.FILES['uploaded_file']
-        except:
+        except Exception as e:
             return HttpResponseRedirect(self.success_url)
         else:
-            tempfilename = handle_uploaded_file(request.FILES['uploaded_file'])
+            log.info('Post from file import dialog')
+            request.session['tempfile'] = handle_uploaded_file(request.FILES['uploaded_file'])
+            return self.trigger_import(request)
 
-        roottag, xmltree = validate_xml(tempfilename)
+    def trigger_import(self, request, savelist={}, do_save=False):
+        log.info('Parsing file ' + request.session.get('tempfile'))
+        roottag, xmltree = validate_xml(request.session.get('tempfile'))
         if roottag == 'domain':
-            import_domain(xmltree)
-            return HttpResponseRedirect(self.success_url)
+            savelist = import_domain(xmltree, savelist=savelist, do_save=do_save)
+            if do_save is False:
+                return self.render_confirmation_page(request, savelist=savelist)
+            else:
+                return HttpResponseRedirect(self.success_url)
         else:
             log.info('Xml parsing error. Import failed.')
             return render(request, self.parsing_error_template, status=400)
+
+    def render_confirmation_page(self, request, savelist, *args, **kwargs):
+        return render(request, self.confirm_page_template, {
+            'status': 200,
+            'savelist': sorted(savelist.items()),
+        })
