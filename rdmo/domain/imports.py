@@ -108,12 +108,12 @@ def import_attribute(attribute_node, nsmap, parent=None, savelist={}, do_save=Fa
         log.info('Attribute not saving "' + str(attribute_uri) + '" due to validation error')
         pass
     else:
-        savelist_uri_setting = get_savelist_setting(condition_uri, savelist)
+        savelist_uri_setting = get_savelist_setting(attribute_uri, savelist)
         # update condition savelist
-        if condition_before is None:
-            savelist[condition_uri] = True
+        if attribute_before is None:
+            savelist[attribute_uri] = True
         else:
-            savelist[condition_uri] = model_will_be_imported(condition_before, condition)
+            savelist[attribute_uri] = model_will_be_imported(attribute_before, attribute)
         # save
         if do_save is True and savelist_uri_setting is True:
             log.info('Attribute saving to "' + str(attribute_uri) + '", parent "' + str(parent) + '"')
