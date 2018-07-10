@@ -63,12 +63,12 @@ class ConditionsImportXMLView(ModelPermissionMixin, ListView):
 
         # in case of receiving xml data
         try:
-            conditions_savelist = json.loads(request.POST['tabledata'])
+            savelist = json.loads(request.POST['tabledata'])
         except KeyError:
             pass
         else:
             log.info('Post seems to come from confirmation page')
-            return self.trigger_import(request, conditions_savelist, do_save=True)
+            return self.trigger_import(request, savelist, do_save=True)
 
         # when receiving upload file
         try:
@@ -84,17 +84,17 @@ class ConditionsImportXMLView(ModelPermissionMixin, ListView):
         log.info('Parsing file ' + request.session.get('tempfile'))
         roottag, xmltree = validate_xml(request.session.get('tempfile'))
         if roottag == 'conditions':
-            conditions_savelist, do_save = import_conditions(xmltree, savelist=tabledata, do_save=do_save)
+            savelist, do_save = import_conditions(xmltree, savelist=tabledata, do_save=do_save)
             if do_save is False:
-                return self.render_confirmation_page(request, conditions_savelist)
+                return self.render_confirmation_page(request, savelist=savelist)
             else:
                 return HttpResponseRedirect(self.success_url)
         else:
             log.info('Xml parsing error. Import failed.')
             return render(request, self.parsing_error_template, status=400)
 
-    def render_confirmation_page(self, request, conditions_savelist, *args, **kwargs):
+    def render_confirmation_page(self, request, savelist, *args, **kwargs):
         return render(request, self.confirm_page_template, {
             'status': 200,
-            'conditions_savelist': sorted(conditions_savelist.items()),
+            'savelist': sorted(savelist.items()),
         })

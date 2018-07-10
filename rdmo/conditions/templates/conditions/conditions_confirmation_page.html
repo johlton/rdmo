@@ -28,7 +28,7 @@
             <th>import</th>
         </tr>
 
-        {% for uri, will_be_imported in conditions_savelist %}
+        {% for uri, will_be_imported in savelist %}
             <tr>
                 <td> {{ uri }} </td>
                 {% if will_be_imported is True %}
