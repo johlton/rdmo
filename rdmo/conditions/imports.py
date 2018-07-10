@@ -62,7 +62,7 @@ def import_conditions(conditions_node, savelist={}, do_save=False):
             pass
         else:
             savelist_uri_setting = get_savelist_setting(condition_uri, savelist)
-            # update condition savelist
+            # update savelist
             if condition_before is None:
                 savelist[condition_uri] = True
             else:

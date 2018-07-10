@@ -49,7 +49,7 @@ def import_attribute_entity(entity_node, nsmap, parent=None, savelist={}, do_sav
         pass
     else:
         savelist_uri_setting = get_savelist_setting(entity_uri, savelist)
-        # update condition savelist
+        # update savelist
         if entity_before is None:
             savelist[entity_uri] = True
         else:
@@ -58,7 +58,6 @@ def import_attribute_entity(entity_node, nsmap, parent=None, savelist={}, do_sav
         if do_save is True and savelist_uri_setting is True:
             log.info('Entity saving to "' + str(entity_uri) + '", parent "' + str(parent) + '"')
             entity.save()
-    return savelist
 
     if entity_node.find('verbosename').text is not None:
         import_verbose_name(get_value_from_treenode(entity_node, 'verbosename'), entity)
@@ -74,9 +73,12 @@ def import_attribute_entity(entity_node, nsmap, parent=None, savelist={}, do_sav
                 pass
 
     for child_node in entity_node.find('children').findall('entity'):
+        log.debug("CHILDREN FOUND")
         savelist = import_attribute_entity(child_node, nsmap, parent=entity, savelist=savelist)
     for child_node in entity_node.find('children').findall('attribute'):
+        log.debug("ATTRIBUTES FOUND")
         savelist = import_attribute(child_node, nsmap, parent=entity, savelist=savelist)
+    return savelist
 
 
 def import_attribute(attribute_node, nsmap, parent=None, savelist={}, do_save=False):
@@ -142,8 +144,7 @@ def import_attribute(attribute_node, nsmap, parent=None, savelist={}, do_save=Fa
                         attribute.conditions.add(condition)
                     except Condition.DoesNotExist:
                         pass
-
-    return savelist, do_save
+    return savelist
 
 
 def import_verbose_name(verbosename_node, entity, savelist={}, do_save=False):
