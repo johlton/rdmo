@@ -2,7 +2,7 @@ import logging
 
 from django.core.exceptions import ValidationError
 
-from rdmo.core.imports import get_value_from_treenode, get_savelist_setting, model_will_be_imported
+from rdmo.core.imports import get_savelist_setting, get_value_from_treenode, model_will_be_imported
 from rdmo.domain.models import Attribute
 from rdmo.options.models import Option
 from rdmo.core.utils import get_ns_map, get_ns_tag, get_uri
@@ -13,7 +13,7 @@ from .validators import ConditionUniqueKeyValidator
 log = logging.getLogger(__name__)
 
 
-def import_conditions(conditions_node, conditions_savelist={}, do_save=False):
+def import_conditions(conditions_node, savelist={}, do_save=False):
     log.info('Importing conditions')
     nsmap = get_ns_map(conditions_node.getroot())
 
@@ -61,14 +61,14 @@ def import_conditions(conditions_node, conditions_savelist={}, do_save=False):
             log.info('Condition not saving "' + str(condition_uri) + '" due to validation error')
             pass
         else:
-            savelist_uri_setting = get_savelist_setting(condition_uri, conditions_savelist)
+            savelist_uri_setting = get_savelist_setting(condition_uri, savelist)
             # update condition savelist
             if condition_before is None:
-                conditions_savelist[condition_uri] = True
+                savelist[condition_uri] = True
             else:
-                conditions_savelist[condition_uri] = model_will_be_imported(condition_before, condition)
+                savelist[condition_uri] = model_will_be_imported(condition_before, condition)
             # save
             if do_save is True and savelist_uri_setting is True:
                 log.info('Condition saving to "' + str(condition_uri) + '"')
                 condition.save()
-    return conditions_savelist, do_save
+    return savelist, do_save
