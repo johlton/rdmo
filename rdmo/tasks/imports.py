@@ -2,10 +2,10 @@ import logging
 
 from django.core.exceptions import ValidationError
 
-from rdmo.core.utils import get_ns_map, get_uri, get_ns_tag
 from rdmo.conditions.models import Condition
+from rdmo.core.imports import get_savelist_setting, get_value_from_treenode, model_will_be_imported
+from rdmo.core.utils import get_ns_map, get_uri, get_ns_tag
 from rdmo.domain.models import Attribute
-from rdmo.core.imports import get_value_from_treenode
 
 from .models import Task, TimeFrame
 from .validators import TaskUniqueKeyValidator
@@ -13,7 +13,7 @@ from .validators import TaskUniqueKeyValidator
 log = logging.getLogger(__name__)
 
 
-def import_tasks(tasks_node):
+def import_tasks(tasks_node, savelist, do_save):
     log.info('Importing tasks')
     nsmap = get_ns_map(tasks_node.getroot())
 
@@ -22,9 +22,11 @@ def import_tasks(tasks_node):
 
         try:
             task = Task.objects.get(uri=task_uri)
+            task_before = task
         except Task.DoesNotExist:
             task = Task()
             log.info('Task not in db. Created with uri ' + task_uri)
+            task_before = None
         else:
             log.info('Task does exist. Loaded from uri ' + task_uri)
 
@@ -48,8 +50,16 @@ def import_tasks(tasks_node):
             log.info('Task not saving "' + str(task_uri) + '" due to validation error')
             continue
         else:
-            log.info('Task saving to "' + str(task_uri) + '"')
-            task.save()
+            savelist_uri_setting = get_savelist_setting(task_uri, savelist)
+            # update savelist
+            if task_before is None:
+                savelist[task_uri] = True
+            else:
+                savelist[task_uri] = model_will_be_imported(task_before, task)
+            # save
+            if do_save is True and savelist_uri_setting is True:
+                log.info('Task saving to "' + str(task_uri) + '"')
+                task.save()
 
         try:
             timeframe = TimeFrame.objects.get(task=task)
@@ -61,7 +71,7 @@ def import_tasks(tasks_node):
             log.info('Timeframe does exist. Loaded from task uri ' + str(task.uri))
 
         timeframe_node = task_node.find('timeframe')
-        do_save = False
+        save_validator = False
         if timeframe_node.find('start_attribute') is not None:
             try:
                 start_attribute_uri = timeframe_node.find('start_attribute').get(get_ns_tag('dc:uri', nsmap))
@@ -78,22 +88,15 @@ def import_tasks(tasks_node):
 
         days_before = get_value_from_treenode(timeframe_node, 'days_before')
         if days_before.isdigit() is True:
-            do_save = True
+            save_validator = True
             timeframe.days_before = get_value_from_treenode(timeframe_node, 'days_before')
 
         days_after = get_value_from_treenode(timeframe_node, 'days_after')
         if days_after.isdigit() is True:
-            do_save = True
+            save_validator = True
             timeframe.days_after = get_value_from_treenode(timeframe_node, 'days_after')
 
-        if do_save is True:
+        if save_validator is True:
             timeframe.save()
 
-        if hasattr(task_node, 'conditions'):
-            for condition_node in task_node.find('condition').findall('conditions'):
-                try:
-                    condition_uri = get_uri(condition_node, nsmap)
-                    condition = Condition.objects.get(uri=condition_uri)
-                    task.conditions.add(condition)
-                except Condition.DoesNotExist:
-                    pass
+    return savelist
