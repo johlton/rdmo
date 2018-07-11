@@ -4,13 +4,14 @@ from django.core.exceptions import ValidationError
 
 from rdmo.core.utils import get_ns_map, get_uri
 
+from rdmo.core.imports import get_savelist_setting, model_will_be_imported
 from .models import View
 from .validators import ViewUniqueKeyValidator
 
 log = logging.getLogger(__name__)
 
 
-def import_views(views_node):
+def import_views(views_node, savelist={}, do_save=False):
     log.info('Importing views')
     nsmap = get_ns_map(views_node.getroot())
 
@@ -19,9 +20,11 @@ def import_views(views_node):
 
         try:
             view = View.objects.get(uri=view_uri)
+            view_before = view
         except View.DoesNotExist:
             view = View()
             log.info('View not in db. Created with uri ' + view_uri)
+            view_before = None
         else:
             log.info('View does exist. Loaded from uri ' + view_uri)
 
@@ -39,6 +42,14 @@ def import_views(views_node):
             log.info('View not saving "' + str(view.key) + '" due to validation error')
             pass
         else:
-            log.info('Optionset saving to "' + str(view.key) + '"')
-            view.template = view_node.find('template').text
-            view.save()
+            savelist_uri_setting = get_savelist_setting(view_uri, savelist)
+            # update savelist
+            if view_before is None:
+                savelist[view_uri] = True
+            else:
+                savelist[view_uri] = model_will_be_imported(view_before, view)
+            # save
+            if do_save is True and savelist_uri_setting is True:
+                log.info('View saving to "' + str(view_uri) + '"')
+                view.save()
+            return savelist

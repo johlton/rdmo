@@ -1,0 +1,103 @@
+{% extends 'core/page.html' %}
+{% load staticfiles %}
+{% load compress %}
+{% load i18n %}
+{% load core_tags %}
+
+
+{% block head %}
+    <meta name='csrftoken' content="{% csrf_token %}" />
+    <style>
+        .switch {
+            cursor: pointer;
+        }
+        .bggreen {
+            background-color: #adff2f;
+        }
+        .bgred {
+            background-color: #ff2f45;
+        }
+    </style>
+
+    <h1>{% trans 'Conditions' %}</h1>
+    <h2>{% trans 'Condition' %}</h2>
+
+    <table id="savelist_table" style="width:100%">
+        <tr>
+            <th>URI</th>
+            <th>import</th>
+        </tr>
+
+        {% for uri, will_be_imported in savelist %}
+            <tr>
+                <td> {{ uri }} </td>
+                {% if will_be_imported is True %}
+                    <td class="switch bggreen">{{ will_be_imported }}</td>
+                {% else %}
+                    <td class="switch bgred">{{ will_be_imported }}</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+
+    <form id="submit_table" method="post">
+        {% csrf_token %}
+        <input type="button" value="Submit" onclick="submit_data()"/>
+    </form>
+
+    <div class="hidden">
+        <div id="filename"> {{ filename }}></div>
+        <div id="fn_token"> {{ fn_token }}</div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $('.switch').on('click', function(e) {
+                $(this).toggleClass('bggreen bgred');
+                if ($(this).text() == 'True')
+                    $(this).text('False')
+                else
+                    $(this).text('True');
+            });
+        });
+
+        function collect_tabledata(){
+            r = {}
+            var oTable = document.getElementById('savelist_table');
+            var rowLength = oTable.rows.length;
+            for (i = 0; i < rowLength; i++){
+                var oCells = oTable.rows.item(i).cells;
+                var cellLength = oCells.length;
+                var key;
+                var val;
+                for(var j = 0; j < cellLength; j=j+2){
+                    if (j === 0){
+                        key = oCells.item(j).innerHTML.trim();
+                        val = oCells.item(j+1).innerHTML.trim();
+                    }
+                    if ( val == 'True' || val == 'False' ){
+                        r[key] = (val === 'True');
+                    }
+               }
+            }
+            return r
+        }
+
+        function submit_data(){
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'views_import' "xml" %}",
+                headers: { 'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]')[0].getAttribute('value') },
+                dataType: 'json',
+                data: {
+                    'tabledata': JSON.stringify(collect_tabledata()),
+                },
+                complete: function(xhr) {
+                    if (xhr.status == 200){
+                        window.location.replace({% url 'views' %})
+                    }
+                },
+        })
+    }
+    </script>
+{% endblock %}
