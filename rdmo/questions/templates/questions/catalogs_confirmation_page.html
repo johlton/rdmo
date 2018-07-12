@@ -97,7 +97,7 @@
                 },
                 complete: function(xhr) {
                     if (xhr.status == 200){
-                        window.location.replace({% url 'catalogs' %})
+                        window.location.replace("{% url 'catalogs' %}");
                     }
                 },
         })

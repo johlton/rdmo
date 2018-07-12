@@ -21,7 +21,7 @@
 {% endblock %}
 
 {% block page %}
-    <h2>{% trans 'Options Import' %}</h2>    
+    <h2>{% trans 'Options Import' %}</h2>
 
     <table id="savelist_table" style="width:100%">
         <tr>
@@ -95,7 +95,7 @@
                 },
                 complete: function(xhr) {
                     if (xhr.status == 200){
-                        window.location.replace({% url 'options' %})
+                        window.location.replace("{% url 'options' %}");
                     }
                 },
         })
