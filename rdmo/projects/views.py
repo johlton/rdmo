@@ -115,7 +115,7 @@ class ProjectImportXMLView(LoginRequiredMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         try:
             request.FILES['uploaded_file']
-        except:
+        except KeyError:
             return HttpResponseRedirect(self.success_url)
         else:
             tempfilename = handle_uploaded_file(request.FILES['uploaded_file'])

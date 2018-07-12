@@ -73,7 +73,7 @@ class ConditionsImportXMLView(ModelPermissionMixin, ListView):
         # when receiving upload file
         try:
             request.FILES['uploaded_file']
-        except Exception as e:
+        except KeyError:
             return HttpResponseRedirect(self.success_url)
         else:
             log.info('Post from file import dialog')
