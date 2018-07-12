@@ -18,10 +18,12 @@
             background-color: #ff2f45;
         }
     </style>
+
 {% endblock %}
 
 {% block page %}
-    <h2>{% trans 'Conditions Import' %}</h2>
+
+    <h2>{% trans 'Catalog Import' %}</h2>
 
     <table id="savelist_table" style="width:100%">
         <tr>
@@ -87,7 +89,7 @@
         function submit_data(){
             $.ajax({
                 type: 'POST',
-                url: "{% url 'conditions_import' "xml" %}",
+                url: "{% url 'questions_catalog_import' "xml" %}",
                 headers: { 'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]')[0].getAttribute('value') },
                 dataType: 'json',
                 data: {
@@ -95,7 +97,7 @@
                 },
                 complete: function(xhr) {
                     if (xhr.status == 200){
-                        window.location.replace({% url 'conditions' %})
+                        window.location.replace({% url 'catalogs' %})
                     }
                 },
         })
