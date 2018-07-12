@@ -1,3 +1,4 @@
+import json
 import logging
 
 from django.conf import settings
@@ -21,6 +22,7 @@ log = logging.getLogger(__name__)
 class CatalogsView(ModelPermissionMixin, TemplateView):
     template_name = 'questions/catalogs.html'
     permission_required = 'questions.view_catalog'
+
 
     def get_context_data(self, **kwargs):
         context = super(CatalogsView, self).get_context_data(**kwargs)
@@ -54,23 +56,48 @@ class CatalogImportXMLView(ModelPermissionMixin, DetailView):
     permission_required = ('questions.add_catalog', 'questions.change_catalog', 'questions.delete_catalog')
     success_url = reverse_lazy('catalogs')
     parsing_error_template = 'core/import_parsing_error.html'
+    confirm_page_template = 'questions/catalogs_confirmation_page.html'
 
     def get(self, request, *args, **kwargs):
         return HttpResponseRedirect(self.success_url)
 
     def post(self, request, *args, **kwargs):
-        # context = self.get_context_data(**kwargs)
+        log.info('Validating post request')
+
+        # in case of receiving xml data
+        try:
+            savelist = json.loads(request.POST['tabledata'])
+        except KeyError:
+            pass
+        else:
+            log.info('Post seems to come from confirmation page')
+            return self.trigger_import(request, savelist, do_save=True)
+
+        # when receiving upload file
         try:
             request.FILES['uploaded_file']
         except KeyError:
             return HttpResponseRedirect(self.success_url)
         else:
-            tempfilename = handle_uploaded_file(request.FILES['uploaded_file'])
+            log.info('Post from file import dialog')
+            request.session['tempfile'] = handle_uploaded_file(request.FILES['uploaded_file'])
+            return self.trigger_import(request, savelist={})
 
-        roottag, xmltree = validate_xml(tempfilename)
+    def trigger_import(self, request, savelist={}, do_save=False):
+        log.info('Parsing file ' + request.session.get('tempfile'))
+        roottag, xmltree = validate_xml(request.session.get('tempfile'))
         if roottag == 'catalog':
-            import_catalog(xmltree)
-            return HttpResponseRedirect(self.success_url)
+            savelist = import_catalog(xmltree, savelist=savelist, do_save=do_save)
+            if do_save is False:
+                return self.render_confirmation_page(request, savelist=savelist)
+            else:
+                return HttpResponseRedirect(self.success_url)
         else:
             log.info('Xml parsing error. Import failed.')
             return render(request, self.parsing_error_template, status=400)
+
+    def render_confirmation_page(self, request, savelist, *args, **kwargs):
+        return render(request, self.confirm_page_template, {
+            'status': 200,
+            'savelist': sorted(savelist.items()),
+        })

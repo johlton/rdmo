@@ -107,12 +107,20 @@ def is_filename_good(filename, fn_token):
 
 def model_will_be_imported(model1, model2):
     will_be_imported = False
-    fields = model1._meta.get_fields()
-    for field in fields:
-        f1val = getattr(model1, field.name, None)
-        f2val = getattr(model2, field.name, None)
-        if f1val != f2val:
-            will_be_imported = True
+    fields = None
+    # try because in question catalogs may occur an exception:
+    # 'NoneType' object has no attribute '_meta'
+    try:
+        fields = model1._meta.get_fields()
+        for field in fields:
+            f1val = getattr(model1, field.name, None)
+            f2val = getattr(model2, field.name, None)
+            if f1val != f2val:
+                will_be_imported = True
+    except AttributeError:
+        pass
+    if fields is None:
+        will_be_imported = True
     return will_be_imported
 
 
