@@ -141,10 +141,6 @@ def import_subsection(subsection_node, nsmap, savelist, do_save, section=None):
             savelist[subsection_uri] = True
         else:
             savelist[subsection_uri] = model_will_be_imported(subsection_before, subsection)
-        # save
-        log.debug('---')
-        log.debug(do_save)
-        log.debug(savelist_uri_setting)
         if do_save is True and savelist_uri_setting is True:
             log.info('Subsection saving to "' + str(subsection_uri) + '"')
             subsection.save()
