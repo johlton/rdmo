@@ -13,7 +13,7 @@ from .validators import AttributeEntityUniquePathValidator
 log = logging.getLogger(__name__)
 
 
-def import_domain(domain_node, savelist, do_save):
+def import_domain(domain_node, savelist={}, do_save=False):
     log.info('Starting to parse domain node')
     nsmap = get_ns_map(domain_node.getroot())
 

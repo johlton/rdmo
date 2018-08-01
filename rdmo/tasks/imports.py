@@ -2,7 +2,6 @@ import logging
 
 from django.core.exceptions import ValidationError
 
-from rdmo.conditions.models import Condition
 from rdmo.core.imports import get_savelist_setting, get_value_from_treenode, model_will_be_imported
 from rdmo.core.utils import get_ns_map, get_uri, get_ns_tag
 from rdmo.domain.models import Attribute
@@ -13,7 +12,7 @@ from .validators import TaskUniqueKeyValidator
 log = logging.getLogger(__name__)
 
 
-def import_tasks(tasks_node, savelist, do_save):
+def import_tasks(tasks_node, savelist={}, do_save=False):
     log.info('Importing tasks')
     nsmap = get_ns_map(tasks_node.getroot())
 
